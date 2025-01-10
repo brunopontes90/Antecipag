@@ -49,5 +49,4 @@ class Database {
     }
 }
 
-// Testando a conexão
-const db = new Database();
+module.exports = Database;
