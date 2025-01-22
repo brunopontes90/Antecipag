@@ -4,6 +4,8 @@ const path = require('path');
 const multer = require('multer');
 const express = require('express');
 const Database = require('./Connect.js');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const port = 3001;
 
 const app = express();
@@ -28,14 +30,15 @@ const upload = multer({
     })
 });
 
-
 // Função para inserir dados no banco.
 function insertData(data) {
-    const query = 'INSERT INTO clients (name_client, email_client, cnpj_client, name_enterprise, amount_paid, isadmin) VALUES (?, ?, ?, ?, ?, ?)';
+    const query = 'INSERT INTO clients (name_client, email_client, pass_client, cnpj_client, name_enterprise, amount_paid, isadmin) VALUES (?, ?, ?, ?, ?, ?, ?)';
+
     data.forEach((row, index) => {
         db.query(query, [
             row.name_client || 'N/A',
             row.email_client || 'N/A',
+            row.pass_client || 'N/A',
             row.cnpj_client || 'N/A',
             row.name_enterprise || 'N/A',
             parseFloat(row.amount_paid) || 0,
@@ -89,7 +92,7 @@ app.get('/', (req, res) => {
 });
 
 // Rota para upload de arquivo .txt
-app.post('/upload/txt', upload.single('file'), (req, res) => {
+app.post('/upload/txt', upload.single('client'), (req, res) => {
     if (!req.file) {
         return res.status(400).send('Nenhum arquivo enviado.');
     }
@@ -102,7 +105,7 @@ app.post('/upload/txt', upload.single('file'), (req, res) => {
             return;
         }
 
-        console.log('Dados TXT lidos: ');
+        console.log('Dados TXT lidos: ', data);
         insertData(data);
 
         // Remove o arquivo temporário
@@ -118,12 +121,13 @@ app.post('/upload/txt', upload.single('file'), (req, res) => {
 app.post('/post/clients', (req, res) => {
     const client = req.body;
 
-    const query = 'INSERT INTO clients (name_client, email_client, cnpj_client, name_enterprise, amount_paid, isadmin) VALUES (?, ?, ?, ?, ?, ?)';
+    const query = 'INSERT INTO clients (name_client, email_client, pass_client, cnpj_client, name_enterprise, amount_paid, isadmin) VALUES (?, ?, ?, ?, ?, ?, ?)';
 
     db.query(query,
         [
             client.name_client,
             client.email_client,
+            client.pass_client,
             client.cnpj_client,
             client.name_enterprise,
             client.amount_paid,
@@ -137,6 +141,33 @@ app.post('/post/clients', (req, res) => {
                 res.send('Cliente cadastrado com sucesso!');
             }
         });
+});
+
+// Rota de login
+app.post('/api/login', (req, res) => {
+    const { email, password } = req.body;
+
+    const query = 'SELECT * FROM clients WHERE email_client = ?';
+    db.query(query, [email], async (err, results) => {
+        if (err) {
+            return res.status(500).send('Erro no servidor.');
+        }
+
+        if (results.length === 0) {
+            return res.status(400).send('Usuário não encontrado.');
+        }
+
+        const user = results[0];
+        const isMatch = await bcrypt.compare(password, user.pass_client);
+
+        if (!isMatch) {
+            return res.status(400).send('Senha incorreta.');
+        }
+
+        const token = jwt.sign({ id: user.id, isAdmin: user.isadmin }, 'your_jwt_secret', { expiresIn: '1h' });
+
+        res.send({ token, isAdmin: user.isadmin });
+    });
 });
 
 app.put('/put/:id', (req, res) => {

@@ -1,38 +1,33 @@
 "use client";
-import Axios from "axios";
-import './page.css';
-import React, { FormEvent, useEffect, useState } from "react";
-import { Button, Checkbox, Form, Input, type FormProps } from "antd";
-import { NextApiRequest, NextApiResponse } from "next";
 
-const Login = (
-  req: NextApiRequest,
-  res: NextApiResponse
-) => {
-  const [data, setData] = useState('');
+import axios from "axios";
+import './page.css';
+import React, { FormEvent, useState } from "react";
+import { Button, Checkbox, Form, Input, type FormProps } from "antd";
+import { useRouter } from "next/navigation";
+
+const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const router = useRouter();
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     try {
-      useEffect(() => {
-        Axios.get("http://http://192.168.15.4:3001/").then((res) => {
-          setData(res.data);
-          console.log(`Logado com sucesso: ${res.data}`);
-          console.log('Aqui: ', res.data)
-        });
-      }, []);
+      const response = await axios.post('http://192.168.15.4:3001/', { email, password });
+      console.log(`Logado com sucesso: ${response.data}`);
+      // Redireciona para a página inicial após login bem-sucedido
+      router.push('/home');
     } catch (error) {
       console.error(`Falha no login: ${error}`);
     }
   }
 
   type FieldType = {
-    username?: string;
+    email?: string;
     password?: string;
-    remember?: string;
+    remember?: boolean;
   };
 
   const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
@@ -62,7 +57,7 @@ const Login = (
         </div>
         <Form.Item<FieldType>
           label="Email"
-          name="username"
+          name="email"
           className='form-item'
           rules={[
             {
@@ -73,6 +68,8 @@ const Login = (
         >
           <Input
             className='input'
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             placeholder="Insira o seu email!"
           />
         </Form.Item>
@@ -89,7 +86,10 @@ const Login = (
           ]}
         >
           <Input
+            type="password"
             className='input'
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             placeholder="Insira a sua senha!"
           />
         </Form.Item>
@@ -115,6 +115,5 @@ const Login = (
     </div>
   );
 };
-
 
 export default Login;
