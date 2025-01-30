@@ -1,9 +1,9 @@
 "use client";
 
 import axios from "axios";
-import { Space, Table, Tooltip } from 'antd';
 import type { TableProps } from 'antd';
 import { useEffect, useState } from "react";
+import { Space, Table, Tooltip } from 'antd';
 import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 
 interface DataType {
