@@ -4,7 +4,7 @@ import axios from "axios";
 import { Space, Table, Tooltip } from 'antd';
 import type { TableProps } from 'antd';
 import { useEffect, useState } from "react";
-import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 
 interface DataType {
   key: string;
@@ -101,6 +101,9 @@ const Home = () => {
         <Space size="middle">
           <Tooltip title="Visualizar">
             <EyeOutlined />
+          </Tooltip>
+          <Tooltip title="Editar">
+            <EditOutlined />
           </Tooltip>
           <Tooltip title="Deletar">
             <DeleteOutlined />
