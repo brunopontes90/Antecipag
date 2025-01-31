@@ -3,7 +3,7 @@
 import axios from "axios";
 import type { TableProps } from 'antd';
 import { useEffect, useState } from "react";
-import { Space, Table, Tooltip } from 'antd';
+import { Modal, Space, Table, Tooltip } from 'antd';
 import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 
 interface DataType {
@@ -18,6 +18,7 @@ const Home = () => {
   const [data, setData] = useState<DataType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,18 +53,7 @@ const Home = () => {
     return <div>{error}</div>;
   }
 
-  const columns: TableProps<DataType>['columns'] = [
-    {
-      title: 'ID',
-      dataIndex: 'key',
-      key: 'key'
-    },
-    {
-      title: 'Nome',
-      dataIndex: 'name',
-      key: 'name',
-      render: (text) => <a>{text}</a>,
-    },
+  const columns_modal: TableProps<DataType>['columns'] = [
     {
       title: 'Email',
       dataIndex: 'email',
@@ -75,16 +65,6 @@ const Home = () => {
       key: 'pass_client',
     },
     {
-      title: 'CNPJ',
-      dataIndex: 'cnpj_client',
-      key: 'cnpj_client',
-    },
-    {
-      title: 'Nome da Empresa',
-      dataIndex: 'name_enterprise',
-      key: 'name_enterprise',
-    },
-    {
       title: 'Valor a Pagar',
       dataIndex: 'amount_paid',
       key: 'amount_paid',
@@ -94,13 +74,33 @@ const Home = () => {
       key: 'isadmin',
       dataIndex: 'isadmin',
     },
+  ];
+
+  const columns_home: TableProps<DataType>['columns'] = [
+    {
+      title: 'Nome',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: 'Nome da Empresa',
+      dataIndex: 'name_enterprise',
+      key: 'name_enterprise',
+    },
+    {
+      title: 'CNPJ',
+      dataIndex: 'cnpj_client',
+      key: 'cnpj_client',
+    },
     {
       title: 'Action',
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
           <Tooltip title="Visualizar">
-            <EyeOutlined />
+            <EyeOutlined
+              onClick={showModal}
+            />
           </Tooltip>
           <Tooltip title="Editar">
             <EditOutlined />
@@ -108,15 +108,38 @@ const Home = () => {
           <Tooltip title="Deletar">
             <DeleteOutlined />
           </Tooltip>
+          <Modal
+            title="Informações"
+            open={isModalOpen}
+            onOk={handleOk}
+            onCancel={handleCancel}
+          >
+            <Table<DataType>
+              columns={columns_modal}
+              dataSource={data}
+            />
+          </Modal>
         </Space>
       ),
     },
   ];
 
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div>
       <Table<DataType>
-        columns={columns}
+        columns={columns_home}
         dataSource={data}
       />
     </div>
