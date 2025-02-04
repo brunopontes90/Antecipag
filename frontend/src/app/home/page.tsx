@@ -1,6 +1,7 @@
 "use client";
 
 import axios from "axios";
+import { format } from "date-fns";
 import type { TableProps } from 'antd';
 import { useEffect, useState } from "react";
 import { Input, Modal, Space, Spin, Table, Tooltip } from 'antd';
@@ -15,6 +16,7 @@ interface DataType {
   name_enterprise: string;
   amount_paid: number;
   isadmin: string;
+  date_created: string;
 }
 
 const Home = () => {
@@ -36,7 +38,8 @@ const Home = () => {
           cnpj_client: item.cnpj_client,
           name_enterprise: item.name_enterprise,
           amount_paid: item.amount_paid,
-          isadmin: item.isadmin == 1 ? 'Sim' : 'Não'
+          isadmin: item.isadmin == 1 ? 'Sim' : 'Não',
+          date_created: format(new Date(item.date_created), 'dd/MM/yyyy')
         }));
         setData(mappedData);
       } catch (err) {
@@ -138,6 +141,10 @@ const Home = () => {
             <div>
               <p><strong>Administrador:</strong></p>
               <Input defaultValue={selectedUser.isadmin} disabled={true} />
+            </div>
+            <div>
+              <p><strong>Criado em:</strong></p>
+              <Input defaultValue={selectedUser.date_created} disabled={true} />
             </div>
           </div>
         )}
