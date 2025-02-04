@@ -3,7 +3,7 @@ import axios from "axios";
 import { format } from "date-fns";
 import type { TableProps } from 'antd';
 import { useEffect, useState } from "react";
-import { Input, Modal, Space, Spin, Table, Tooltip, Layout, theme } from 'antd';
+import { Input, Modal, Space, Spin, Table, Tooltip, Layout, theme, Card } from 'antd';
 import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 
 interface DataType {
@@ -26,10 +26,7 @@ const Home = () => {
   const [selectedUser, setSelectedUser] = useState<DataType | null>(null);
 
   const { Content, Footer } = Layout;
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
-
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -120,53 +117,46 @@ const Home = () => {
     <Layout>
       <Content
         style={{
-          padding: '0 48px',
+          // padding: '0 48px',
         }}
       >
-        <div
-          style={{
-            padding: 24,
-            minHeight: 380,
-            marginBottom: 10,
-            marginTop: 50,
-            background: colorBgContainer,
-            borderRadius: borderRadiusLG,
-          }}
-        >
+        <div>
           <Table<DataType>
             columns={columns_home}
             dataSource={data}
           />
           <Modal
-            title="Informações"
+            // title="Informações"
             open={isModalOpen}
             onOk={handleOk}
             onCancel={handleCancel}
           >
-            {selectedUser && (
-              <div>
+            <Card title="Informações" bordered={true}>
+              {selectedUser && (
                 <div>
-                  <p><strong>Email:</strong></p>
-                  <Input defaultValue={selectedUser.email} disabled={true} />
+                  <div>
+                    <p><strong>Email:</strong></p>
+                    <Input defaultValue={selectedUser.email} disabled={true} />
+                  </div>
+                  <div>
+                    <p><strong>Senha do Cliente:</strong></p>
+                    <Input defaultValue={selectedUser.pass_client} disabled={true} />
+                  </div>
+                  <div>
+                    <p><strong>Valor a Pagar:</strong></p>
+                    <Input defaultValue={`R$ ${selectedUser.amount_paid}`} disabled={true} />
+                  </div>
+                  <div>
+                    <p><strong>Administrador:</strong></p>
+                    <Input defaultValue={selectedUser.isadmin} disabled={true} />
+                  </div>
+                  <div>
+                    <p><strong>Criado em:</strong></p>
+                    <Input defaultValue={selectedUser.date_created} disabled={true} />
+                  </div>
                 </div>
-                <div>
-                  <p><strong>Senha do Cliente:</strong></p>
-                  <Input defaultValue={selectedUser.pass_client} disabled={true} />
-                </div>
-                <div>
-                  <p><strong>Valor a Pagar:</strong></p>
-                  <Input defaultValue={`R$ ${selectedUser.amount_paid}`} disabled={true} />
-                </div>
-                <div>
-                  <p><strong>Administrador:</strong></p>
-                  <Input defaultValue={selectedUser.isadmin} disabled={true} />
-                </div>
-                <div>
-                  <p><strong>Criado em:</strong></p>
-                  <Input defaultValue={selectedUser.date_created} disabled={true} />
-                </div>
-              </div>
-            )}
+              )}
+            </Card>
           </Modal>
         </div>
       </Content>
