@@ -76,17 +76,17 @@ const Home = () => {
     {
       title: 'Nome',
       dataIndex: 'name',
-      key: 'name',
+      key: 'name'
     },
     {
       title: 'Nome da Empresa',
       dataIndex: 'name_enterprise',
-      key: 'name_enterprise',
+      key: 'name_enterprise'
     },
     {
       title: 'CNPJ',
       dataIndex: 'cnpj_client',
-      key: 'cnpj_client',
+      key: 'cnpj_client'
     },
     {
       title: 'Ação',
@@ -105,7 +105,7 @@ const Home = () => {
             <DeleteOutlined />
           </Tooltip>
         </Space>
-      ),
+      )
     },
   ];
 
