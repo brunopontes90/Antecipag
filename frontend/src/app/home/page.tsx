@@ -3,7 +3,7 @@
 import axios from "axios";
 import type { TableProps } from 'antd';
 import { useEffect, useState } from "react";
-import { Modal, Space, Spin, Table, Tooltip } from 'antd';
+import { Input, Modal, Space, Spin, Table, Tooltip } from 'antd';
 import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 
 interface DataType {
@@ -123,10 +123,22 @@ const Home = () => {
       >
         {selectedUser && (
           <div>
-            <p><strong>Email:</strong> {selectedUser.email}</p>
-            <p><strong>Senha do Cliente:</strong> {selectedUser.pass_client}</p>
-            <p><strong>Valor a Pagar:</strong> R$ {selectedUser.amount_paid}</p>
-            <p><strong>Administrador:</strong> {selectedUser.isadmin}</p>
+            <div>
+              <p><strong>Email:</strong></p>
+              <Input defaultValue={selectedUser.email} disabled={true} />
+            </div>
+            <div>
+              <p><strong>Senha do Cliente:</strong></p>
+              <Input defaultValue={selectedUser.pass_client} disabled={true} />
+            </div>
+            <div>
+              <p><strong>Valor a Pagar:</strong></p>
+              <Input defaultValue={`R$ ${selectedUser.amount_paid}`} disabled={true} />
+            </div>
+            <div>
+              <p><strong>Administrador:</strong></p>
+              <Input defaultValue={selectedUser.isadmin} disabled={true} />
+            </div>
           </div>
         )}
       </Modal>
