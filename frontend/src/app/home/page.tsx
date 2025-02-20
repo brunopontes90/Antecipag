@@ -1,10 +1,10 @@
 "use client";
+import "./page.css";
 import axios from "axios";
 import { format } from "date-fns";
-import type { TableProps } from 'antd';
+import { Divider, Input, Spin, Tooltip } from "antd";
 import { useEffect, useState } from "react";
-import { Input, Modal, Space, Spin, Table, Tooltip, Layout, theme } from 'antd';
-import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
+import { DeleteFilled, EditFilled, EyeFilled } from "@ant-design/icons";
 
 interface DataType {
   key: string;
@@ -21,14 +21,9 @@ interface DataType {
 const Home = () => {
   const [data, setData] = useState<DataType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<DataType | null>(null);
-
-  const { Content, Footer } = Layout;
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,130 +52,119 @@ const Home = () => {
   }, []);
 
   const showModal = (user: DataType) => {
-    setSelectedUser(user);
-    setIsModalOpen(true);
+    setSelectedUser(user); // Define o usuário selecionado
+    setIsModalOpen(true); // Abre o modal
   };
 
-  const handleOk = () => {
-    setIsModalOpen(false);
-    setSelectedUser(null);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-    setSelectedUser(null);
+  const closeModal = () => {
+    setIsModalOpen(false); // Fecha o modal
+    setSelectedUser(null); // Reseta o usuário selecionado
   };
 
   if (loading) {
-    return <div><Spin size="large" /></div>;
+    return <div><p>Carregando...</p></div>;
   }
 
   if (error) {
     return <div>{error}</div>;
   }
 
-  const columns_home: TableProps<DataType>['columns'] = [
-    {
-      title: 'Nome',
-      dataIndex: 'name',
-      key: 'name'
-    },
-    {
-      title: 'Nome da Empresa',
-      dataIndex: 'name_enterprise',
-      key: 'name_enterprise'
-    },
-    {
-      title: 'CNPJ',
-      dataIndex: 'cnpj_client',
-      key: 'cnpj_client'
-    },
-    {
-      title: 'Ação',
-      key: 'action',
-      render: (_, record) => (
-        <Space size="small">
-          <Tooltip title="Visualizar">
-            <EyeOutlined
-              onClick={() => showModal(record)}
-            />
-          </Tooltip>
-          <Tooltip title="Editar">
-            <EditOutlined />
-          </Tooltip>
-          <Tooltip title="Deletar">
-            <DeleteOutlined />
-          </Tooltip>
-        </Space>
-      )
-    },
-  ];
-
   return (
-    <Layout>
-      <Content
-        style={{
-          padding: '0 48px',
-        }}
-      >
-        <div
-          style={{
-            padding: 24,
-            minHeight: 380,
-            marginBottom: 10,
-            marginTop: 50,
-            background: colorBgContainer,
-            borderRadius: borderRadiusLG,
-          }}
-        >
-          <Table<DataType>
-            columns={columns_home}
-            dataSource={data}
-          />
-          <Modal
-            title="Informações"
-            open={isModalOpen}
-            onOk={handleOk}
-            onCancel={handleCancel}
-          >
-            {selectedUser && (
-              <div>
-                <div>
-                  <p><strong>Email:</strong></p>
-                  <Input defaultValue={selectedUser.email} disabled={true} />
+    <div>
+      <h1>Usuários</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Nome da Empresa</th>
+            <th>CNPJ</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((user) => (
+            <tr key={user.key}>
+              <td>{user.name}</td>
+              <td>{user.name_enterprise}</td>
+              <td>{user.cnpj_client}</td>
+              <td>
+                <div className="btn-action-group">
+                  <div>
+                    <Tooltip title="Visualizar">
+                      <button
+                        className="btn-action"
+                        onClick={() => showModal(user)}
+                      >
+                        <EyeFilled />
+                      </button>
+                    </Tooltip>
+                  </div>
+                  <div>
+                    <Tooltip title="Editar">
+                      <button
+                        className="btn-action"
+                        onClick={() => showModal(user)}
+                      >
+                        <EditFilled />
+                      </button>
+                    </Tooltip>
+                  </div>
+                  <div>
+                    <Tooltip title="Deletar">
+                      <button
+                        className="btn-action"
+                        onClick={() => showModal(user)}
+                      >
+                        <DeleteFilled />
+                      </button>
+                    </Tooltip>
+                  </div>
                 </div>
-                <div>
-                  <p><strong>Senha do Cliente:</strong></p>
-                  <Input defaultValue={selectedUser.pass_client} disabled={true} />
-                </div>
-                <div>
-                  <p><strong>Valor a Pagar:</strong></p>
-                  <Input defaultValue={`R$ ${selectedUser.amount_paid}`} disabled={true} />
-                </div>
-                <div>
-                  <p><strong>Administrador:</strong></p>
-                  <Input defaultValue={selectedUser.isadmin} disabled={true} />
-                </div>
-                <div>
-                  <p><strong>Criado em:</strong></p>
-                  <Input defaultValue={selectedUser.date_created} disabled={true} />
-                </div>
-              </div>
-            )}
-          </Modal>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Modal */}
+      {isModalOpen && selectedUser && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>Informações do Usuário</h2>
+            <Divider />
+            <div>
+              <p><strong>Email:</strong></p>
+              <Input defaultValue={selectedUser.email} disabled={true} />
+            </div>
+            <div>
+              <p><strong>Senha:</strong></p>
+              <Input defaultValue={selectedUser.pass_client} disabled={true} />
+            </div>
+            <div>
+              <p><strong>Valor:</strong></p>
+              <Input defaultValue={selectedUser.amount_paid} disabled={true} />
+            </div>
+            <div>
+              <p><strong>Admin:</strong></p>
+              <Input defaultValue={selectedUser.isadmin} disabled={true} />
+            </div>
+            <div>
+              <p><strong>Criado em:</strong></p>
+              <Input defaultValue={selectedUser.date_created} disabled={true} />
+            </div>
+            <Divider />
+            <div>
+              <button
+                onClick={closeModal}
+                className="btn-close-modal"
+              >
+                Fechar
+              </button>
+            </div>
+          </div>
         </div>
-      </Content>
-      <Footer
-        style={{
-          bottom: 0,
-          width: '100%',
-          position: 'fixed',
-          textAlign: 'center',
-        }}
-      >
-        Antecipag ©{new Date().getFullYear()} Created by Bruno Pontes
-      </Footer>
-    </Layout >
+      )}
+    </div>
   );
 };
 
