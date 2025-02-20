@@ -2,10 +2,9 @@
 import "./page.css";
 import axios from "axios";
 import { format } from "date-fns";
-import { Divider, Input, Spin, Tooltip } from "antd";
 import { useEffect, useState } from "react";
-import { Input, Modal, Space, Spin, Table, Tooltip, Layout, theme, Card } from 'antd';
-import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
+import { Divider, Input, Tooltip } from "antd";
+import { DeleteFilled, EditFilled, EyeFilled } from "@ant-design/icons";
 
 interface DataType {
   key: string;
@@ -26,8 +25,6 @@ const Home = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<DataType | null>(null);
 
-  const { Content, Footer } = Layout;
-  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -73,50 +70,98 @@ const Home = () => {
   }
 
   return (
-    <Layout>
-      <Content
-        style={{
-          // padding: '0 48px',
-        }}
-      >
-        <div>
-          <Table<DataType>
-            columns={columns_home}
-            dataSource={data}
-          />
-          <Modal
-            // title="Informações"
-            open={isModalOpen}
-            onOk={handleOk}
-            onCancel={handleCancel}
-          >
-            <Card title="Informações" bordered={true}>
-              {selectedUser && (
-                <div>
+    <div>
+      <h1>Usuários</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Nome da Empresa</th>
+            <th>CNPJ</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((user) => (
+            <tr key={user.key}>
+              <td>{user.name}</td>
+              <td>{user.name_enterprise}</td>
+              <td>{user.cnpj_client}</td>
+              <td>
+                <div className="btn-action-group">
                   <div>
-                    <p><strong>Email:</strong></p>
-                    <Input defaultValue={selectedUser.email} disabled={true} />
+                    <Tooltip title="Visualizar">
+                      <button
+                        className="btn-action"
+                        onClick={() => showModal(user)}
+                      >
+                        <EyeFilled />
+                      </button>
+                    </Tooltip>
                   </div>
                   <div>
-                    <p><strong>Senha do Cliente:</strong></p>
-                    <Input defaultValue={selectedUser.pass_client} disabled={true} />
+                    <Tooltip title="Editar">
+                      <button
+                        className="btn-action"
+                        onClick={() => showModal(user)}
+                      >
+                        <EditFilled />
+                      </button>
+                    </Tooltip>
                   </div>
                   <div>
-                    <p><strong>Valor a Pagar:</strong></p>
-                    <Input defaultValue={`R$ ${selectedUser.amount_paid}`} disabled={true} />
-                  </div>
-                  <div>
-                    <p><strong>Administrador:</strong></p>
-                    <Input defaultValue={selectedUser.isadmin} disabled={true} />
-                  </div>
-                  <div>
-                    <p><strong>Criado em:</strong></p>
-                    <Input defaultValue={selectedUser.date_created} disabled={true} />
+                    <Tooltip title="Deletar">
+                      <button
+                        className="btn-action"
+                        onClick={() => showModal(user)}
+                      >
+                        <DeleteFilled />
+                      </button>
+                    </Tooltip>
                   </div>
                 </div>
-              )}
-            </Card>
-          </Modal>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Modal */}
+      {isModalOpen && selectedUser && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>Informações do Usuário</h2>
+            <Divider />
+            <div>
+              <p><strong>Email:</strong></p>
+              <Input defaultValue={selectedUser.email} disabled={true} />
+            </div>
+            <div>
+              <p><strong>Senha:</strong></p>
+              <Input defaultValue={selectedUser.pass_client} disabled={true} />
+            </div>
+            <div>
+              <p><strong>Valor:</strong></p>
+              <Input defaultValue={selectedUser.amount_paid} disabled={true} />
+            </div>
+            <div>
+              <p><strong>Admin:</strong></p>
+              <Input defaultValue={selectedUser.isadmin} disabled={true} />
+            </div>
+            <div>
+              <p><strong>Criado em:</strong></p>
+              <Input defaultValue={selectedUser.date_created} disabled={true} />
+            </div>
+            <Divider />
+            <div>
+              <button
+                onClick={closeModal}
+                className="btn-close-modal"
+              >
+                Fechar
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
