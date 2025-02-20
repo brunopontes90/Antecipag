@@ -1,7 +1,8 @@
 "use client";
+import "./page.css";
 import axios from "axios";
 import { format } from "date-fns";
-import type { TableProps } from 'antd';
+import { Divider, Input, Spin, Tooltip } from "antd";
 import { useEffect, useState } from "react";
 import { Input, Modal, Space, Spin, Table, Tooltip, Layout, theme, Card } from 'antd';
 import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
@@ -21,8 +22,8 @@ interface DataType {
 const Home = () => {
   const [data, setData] = useState<DataType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<DataType | null>(null);
 
   const { Content, Footer } = Layout;
@@ -54,64 +55,22 @@ const Home = () => {
   }, []);
 
   const showModal = (user: DataType) => {
-    setSelectedUser(user);
-    setIsModalOpen(true);
+    setSelectedUser(user); // Define o usuário selecionado
+    setIsModalOpen(true); // Abre o modal
   };
 
-  const handleOk = () => {
-    setIsModalOpen(false);
-    setSelectedUser(null);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-    setSelectedUser(null);
+  const closeModal = () => {
+    setIsModalOpen(false); // Fecha o modal
+    setSelectedUser(null); // Reseta o usuário selecionado
   };
 
   if (loading) {
-    return <div><Spin size="large" /></div>;
+    return <div><p>Carregando...</p></div>;
   }
 
   if (error) {
     return <div>{error}</div>;
   }
-
-  const columns_home: TableProps<DataType>['columns'] = [
-    {
-      title: 'Nome',
-      dataIndex: 'name',
-      key: 'name'
-    },
-    {
-      title: 'Nome da Empresa',
-      dataIndex: 'name_enterprise',
-      key: 'name_enterprise'
-    },
-    {
-      title: 'CNPJ',
-      dataIndex: 'cnpj_client',
-      key: 'cnpj_client'
-    },
-    {
-      title: 'Ação',
-      key: 'action',
-      render: (_, record) => (
-        <Space size="small">
-          <Tooltip title="Visualizar">
-            <EyeOutlined
-              onClick={() => showModal(record)}
-            />
-          </Tooltip>
-          <Tooltip title="Editar">
-            <EditOutlined />
-          </Tooltip>
-          <Tooltip title="Deletar">
-            <DeleteOutlined />
-          </Tooltip>
-        </Space>
-      )
-    },
-  ];
 
   return (
     <Layout>
@@ -159,18 +118,8 @@ const Home = () => {
             </Card>
           </Modal>
         </div>
-      </Content>
-      <Footer
-        style={{
-          bottom: 0,
-          width: '100%',
-          position: 'fixed',
-          textAlign: 'center',
-        }}
-      >
-        Antecipag ©{new Date().getFullYear()} Created by Bruno Pontes
-      </Footer>
-    </Layout >
+      )}
+    </div>
   );
 };
 
