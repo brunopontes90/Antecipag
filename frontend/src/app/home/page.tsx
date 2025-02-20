@@ -2,8 +2,8 @@
 import "./page.css";
 import axios from "axios";
 import { format } from "date-fns";
-import { Divider, Input, Spin, Tooltip } from "antd";
 import { useEffect, useState } from "react";
+import { Divider, Input, Tooltip } from "antd";
 import { DeleteFilled, EditFilled, EyeFilled } from "@ant-design/icons";
 
 interface DataType {
