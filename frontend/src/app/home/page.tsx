@@ -69,6 +69,22 @@ const Home = () => {
     return <div>{error}</div>;
   }
 
+  const handleDelete = async (userId: string) => {
+    const confirmDelete = window.confirm('Tem certeza que deseja deletar este usuário?');
+    if (!confirmDelete) return; // Cancela a exclusão se o usuário não confirmar
+
+    try {
+      await axios.delete(`http://192.168.15.4:3001/delete/${userId}`);
+      alert('Usuário deletado com sucesso!');
+
+      // Atualiza a lista de usuários após a exclusão
+      const updatedUsers = data.filter((user) => user.key !== userId);
+      setData(updatedUsers);
+    } catch (error) {
+      alert('Erro ao deletar usuário. Tente novamente.');
+    }
+  };
+
   return (
     <div>
       <h1>Usuários</h1>
@@ -113,7 +129,7 @@ const Home = () => {
                     <Tooltip title="Deletar">
                       <button
                         className="btn-action"
-                        onClick={() => showModal(user)}
+                        onClick={() => handleDelete(user.key)}
                       >
                         <DeleteFilled />
                       </button>
