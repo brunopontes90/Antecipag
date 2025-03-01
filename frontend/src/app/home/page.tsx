@@ -1,10 +1,11 @@
 "use client";
-import "./page.css";
+import './page.css';
 import axios from "axios";
+import { Tooltip } from "antd";
+import Modal from "../modal/page";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
-import { Divider, Input, Tooltip } from "antd";
-import { DeleteFilled, EditFilled, EyeFilled } from "@ant-design/icons";
+import { DeleteFilled, EyeFilled } from "@ant-design/icons";
 
 interface DataType {
   key: string;
@@ -19,8 +20,9 @@ interface DataType {
 }
 
 const Home = () => {
-  const [data, setData] = useState<DataType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editMode, setEditMode] = useState(false);
+  const [data, setData] = useState<DataType[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<DataType | null>(null);
@@ -52,26 +54,50 @@ const Home = () => {
   }, []);
 
   const showModal = (user: DataType) => {
-    setSelectedUser(user); // Define o usuário selecionado
-    setIsModalOpen(true); // Abre o modal
+    setSelectedUser(user);
+    setIsModalOpen(true);
   };
 
   const closeModal = () => {
-    setIsModalOpen(false); // Fecha o modal
-    setSelectedUser(null); // Reseta o usuário selecionado
+    setIsModalOpen(false);
+    setSelectedUser(null);
+    setEditMode(false);
   };
 
-  if (loading) {
-    return <div><p>Carregando...</p></div>;
-  }
+  const handleSave = async () => {
+    if (!selectedUser) return;
 
-  if (error) {
-    return <div>{error}</div>;
-  }
+    try {
+      const updatedFields = {
+        name_client: selectedUser.name,
+        email_client: selectedUser.email,
+        pass_client: selectedUser.pass_client,
+        cnpj_client: selectedUser.cnpj_client,
+        name_enterprise: selectedUser.name_enterprise,
+        amount_paid: selectedUser.amount_paid,
+        isadmin: selectedUser.isadmin === 'Sim' ? 1 : 0,
+      };
+
+      await axios.put(`http://192.168.15.4:3001/put/${selectedUser.key}`, updatedFields);
+      alert('Alterações salvas com sucesso!');
+
+      // Atualiza a lista de usuários após a edição
+      const updatedUsers = data.map((user) =>
+        user.key === selectedUser.key ? selectedUser : user
+      );
+      setData(updatedUsers);
+
+      // Fecha a modal automaticamente
+      closeModal();
+    } catch (error) {
+      console.error('Erro ao atualizar usuário:', error);
+      alert('Erro ao atualizar usuário. Tente novamente.');
+    }
+  };
 
   const handleDelete = async (userId: string) => {
     const confirmDelete = window.confirm('Tem certeza que deseja deletar este usuário?');
-    if (!confirmDelete) return; // Cancela a exclusão se o usuário não confirmar
+    if (!confirmDelete) return;
 
     try {
       await axios.delete(`http://192.168.15.4:3001/delete/${userId}`);
@@ -84,6 +110,14 @@ const Home = () => {
       alert('Erro ao deletar usuário. Tente novamente.');
     }
   };
+
+  if (loading) {
+    return <div><p>Carregando...</p></div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <div>
@@ -116,16 +150,6 @@ const Home = () => {
                     </Tooltip>
                   </div>
                   <div>
-                    <Tooltip title="Editar">
-                      <button
-                        className="btn-action"
-                        onClick={() => showModal(user)}
-                      >
-                        <EditFilled />
-                      </button>
-                    </Tooltip>
-                  </div>
-                  <div>
                     <Tooltip title="Deletar">
                       <button
                         className="btn-action"
@@ -143,43 +167,16 @@ const Home = () => {
       </table>
 
       {/* Modal */}
-      {isModalOpen && selectedUser && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h2>Informações do Usuário</h2>
-            <Divider />
-            <div>
-              <p><strong>Email:</strong></p>
-              <Input defaultValue={selectedUser.email} disabled={true} />
-            </div>
-            <div>
-              <p><strong>Senha:</strong></p>
-              <Input defaultValue={selectedUser.pass_client} disabled={true} />
-            </div>
-            <div>
-              <p><strong>Valor:</strong></p>
-              <Input defaultValue={selectedUser.amount_paid} disabled={true} />
-            </div>
-            <div>
-              <p><strong>Admin:</strong></p>
-              <Input defaultValue={selectedUser.isadmin} disabled={true} />
-            </div>
-            <div>
-              <p><strong>Criado em:</strong></p>
-              <Input defaultValue={selectedUser.date_created} disabled={true} />
-            </div>
-            <Divider />
-            <div>
-              <button
-                onClick={closeModal}
-                className="btn-close-modal"
-              >
-                Fechar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <Modal
+        editMode={editMode}
+        onSave={handleSave}
+        onClose={closeModal}
+        isModalOpen={isModalOpen}
+        selectedUser={selectedUser}
+        onEdit={() => setEditMode(true)}
+        setSelectedUser={setSelectedUser}
+        onCancelEdit={() => setEditMode(false)}
+      />
     </div>
   );
 };
