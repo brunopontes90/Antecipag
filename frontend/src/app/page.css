@@ -1,42 +1,80 @@
-@charset "UTF-8";
-
-:root {
-    --black: #000000;
-    --gray: #585858;
-}
-
-.div-form {
+/* Estilos globais */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
     display: flex;
-    margin-top: 200px;
     justify-content: center;
-}
-
-.h2-title {
-    font-size: 24pt;
-    margin-left: 50px;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .login-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .login-form h2 {
     text-align: center;
-    text-transform: uppercase;
-}
-
-.form {
-    padding: 100px;
-    box-shadow: 0px 10px 10px 0px var(--gray);
-}
-
-.form-item {
-    font-weight: bold;
-    margin-right: 100px;
-}
-
-.input {
-    width: 300px;
-}
-
-.form-button {
-    height: 80;
-    width: 200px;
-    font-size: 14pt;
-    margin-top: 24px;
-    font-weight: bold;
-    text-decoration: none;
-}
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .form-group input[type="checkbox"] {
+    width: auto;
+    margin-right: 10px;
+  }
+  
+  .remember-me {
+    display: flex;
+    align-items: center;
+  }
+  
+  .error-message {
+    color: #ff4d4f;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  
+  button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  button:hover:not(:disabled) {
+    background-color: #0056b3;
+  }

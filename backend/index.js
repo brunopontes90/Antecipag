@@ -148,7 +148,7 @@ app.post('/api/login', (req, res) => {
     const { email, password } = req.body;
 
     const query = 'SELECT * FROM clients WHERE email_client = ?';
-    db.query(query, [email], async (err, results) => {
+    db.query(query, [email], (err, results) => {
         if (err) {
             return res.status(500).send('Erro no servidor.');
         }
@@ -158,15 +158,17 @@ app.post('/api/login', (req, res) => {
         }
 
         const user = results[0];
-        const isMatch = await bcrypt.compare(password, user.pass_client);
 
-        if (!isMatch) {
+        // Comparação direta da senha (sem hash)
+        if (password !== user.pass_client) {
             return res.status(400).send('Senha incorreta.');
         }
 
+        // Gera um token JWT (opcional, para autenticação futura)
         const token = jwt.sign({ id: user.id, isAdmin: user.isadmin }, 'your_jwt_secret', { expiresIn: '1h' });
 
-        res.send({ token, isAdmin: user.isadmin });
+        // Retorna o token e informações do usuário
+        res.send({ token, isAdmin: user.isadmin, message: 'Login bem-sucedido!' });
     });
 });
 
