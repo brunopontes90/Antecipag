@@ -1,8 +1,8 @@
 "use client";
-import axios from "axios";
-import React, { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
 import './page.css';
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import React, { FormEvent, useState } from "react";
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -18,8 +18,10 @@ const Login = () => {
     setError(null);
 
     try {
+      // Simula um atraso de 2 segundos antes de fazer a requisição
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       const response = await axios.post('http://192.168.15.4:3001/api/login', { email, password });
-      console.log('Logado com sucesso:', response.data);
 
       // Redireciona para a página inicial após login bem-sucedido
       if (response.data.token) {
@@ -27,7 +29,6 @@ const Login = () => {
         router.push('/home');
       }
     } catch (error) {
-      console.error('Falha no login:', error);
       setError('Email ou senha incorretos. Tente novamente.');
     } finally {
       setLoading(false);
